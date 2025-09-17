@@ -13,8 +13,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+<<<<<<< HEAD
     - name: Text Cleanup Tests
       id: text-cleanup-tests
+=======
+    - name: Step Streaks Tests
+      id: step-streaks-tests
+>>>>>>> 8c49106e810e407fc32ff40afcf5d2fcb2c1bc35
       uses: classroom-resources/autograding-python-grader@v1
       with:
         timeout: 10
@@ -22,6 +27,12 @@ jobs:
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
+<<<<<<< HEAD
         TEXT-CLEANUP-TESTS_RESULTS: "${{steps.text-cleanup-tests.outputs.result}}"
       with:
         runners: text-cleanup-tests
+=======
+        STEP-STREAKS-TESTS_RESULTS: "${{steps.step-streaks-tests.outputs.result}}"
+      with:
+        runners: step-streaks-tests
+>>>>>>> 8c49106e810e407fc32ff40afcf5d2fcb2c1bc35
