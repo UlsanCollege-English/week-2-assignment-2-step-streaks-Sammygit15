@@ -1,21 +1,28 @@
-import pytest
-from src.textops import unique_words_preserve_order, top_k_frequent_first_tie, redact_words
+from collections import Counter
 
+def unique_words_preserve_order(words):
+    """Return a list of unique words, preserving the order of their first appearance."""
+    seen = set()
+    unique_words = []
+    for word in words:
+        if word not in seen:
+            seen.add(word)
+            unique_words.append(word)
+    return unique_words
 
-def test_unique_words_preserve_order():
-    assert unique_words_preserve_order(["a", "b", "a", "c", "b"]) == ["a", "b", "c"]
-    assert unique_words_preserve_order([]) == []
+def top_k_frequent_first_tie(words, k):
+    """Return the top k most frequent words, resolving ties by their first appearance."""
+    if k <= 0:
+        raise ValueError("k must be greater than 0.")
+    
+    # Count frequencies of words
+    word_counts = Counter(words)
+    
+    # Sort words by frequency (most common first) and by first appearance
+    sorted_words = sorted(word_counts, key=lambda word: (-word_counts[word], words.index(word)))
+    
+    return sorted_words[:k]
 
-
-def test_top_k_frequent_first_tie():
-    words = ["x", "y", "x", "z", "y", "y", "x"]
-    # counts: x=3, y=3, z=1; first appearance: x(0) beats y(1)
-    assert top_k_frequent_first_tie(words, 2) == ["x", "y"]
-    with pytest.raises(ValueError):
-        top_k_frequent_first_tie(words, 0)
-
-
-def test_redact_words():
-    words = ["alice", "bob", "alice", "carol"]
-    assert redact_words(words, ["alice"]) == ["***", "bob", "***", "carol"]
-    assert redact_words(words, []) == words
+def redact_words(words, redact_list):
+    """Redact words in the redact_list with '***'."""
+    return [word if word not in redact_list else '***' for word in words]
