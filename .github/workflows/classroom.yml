@@ -1,29 +1,39 @@
 name: Autograding Tests
+
 'on':
   - push
+  - pull_request
   - repository_dispatch
+
 permissions:
   checks: write
   actions: read
   contents: read
+
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
+      # Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Step Streaks Tests
-        id: step-streaks-tests
-        uses: classroom-resources/autograding-python-grader@v1
+      # Install Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          timeout: 10
-          setup-command: ''
+          python-version: '3.11'
 
-      - name: Autograding Reporter
-        uses: classroom-resources/autograding-grading-reporter@v1
-        env:
-          STEP-STREAKS-TESTS_RESULTS: "${{steps.step-streaks-tests.outputs.result}}"
-        with:
-          runners: step-streaks-tests
+      # Install dependencies (if you have a requirements.txt)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # Run pytest with PYTHONPATH
+      - name: Run tests
+        run: |
+          echo "Adding src/ to PYTHONPATH"
+          export PYTHONPATH=$GITHUB_WORKSPACE
+          python -m pytest -q --tb=short

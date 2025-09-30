@@ -1,12 +1,21 @@
 name: tests
 on: [push, pull_request]
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+
+      - run: pip install --upgrade pip
       - run: pip install pytest
-      - run: pytest -q
+
+      # Set PYTHONPATH so Python can see src/
+      - name: Run pytest
+        run: |
+          export PYTHONPATH=$GITHUB_WORKSPACE
+          python -m pytest -q
